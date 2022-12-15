@@ -1,7 +1,7 @@
 import axios from "axios";
 import qs from "qs";
 
-const url = "http://localhost:2020/api";
+const url = "https://socialmedia0-downloader.onrender.com/api";
 
 export const getVideo = (socialMediaCategory, videoURL) =>
   axios({

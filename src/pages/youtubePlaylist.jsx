@@ -1,37 +1,73 @@
-import { Button } from "antd";
-import React from "react";
+import { DownOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Space } from "antd";
+import React, { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import UrlInput from "../components/UrlInput";
+import { GlobalContext } from "../context/context";
 import Spinner from "../utils/spinner";
 import { SocialMediaContainer } from "./youtube";
 
 const YoutubePlaylist = () => {
+  const { youtubePlaylistData } = useContext(GlobalContext);
+  const [loading, setLoading] = useState(false);
+
+  const CustomizedDropdown = ({ item }) => {
+    const items =
+      item &&
+      item.dataFormats.map((dataFormat) => {
+        return {
+          label: (
+            <a href={dataFormat.dataDownload} target="_blank" download>
+              <Space>
+                {dataFormat.ext}
+                {dataFormat.format}
+                {dataFormat.filesize}kb
+              </Space>
+            </a>
+          ),
+          key: `${dataFormat.dataDownload}`,
+        };
+      });
+
+    return (
+      <Dropdown menu={{ items }} trigger="click">
+        <Button type="default">
+          <Space>
+            Download
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+    );
+  };
 
   return (
     <SocialMediaContainer>
-      <UrlInput category={"youtube-playlist"} />
+      <UrlInput category={"youtube-playlist"} setLoading={setLoading} />
 
       <BodyContainer>
-        <Spinner />
-        {/* <>
-          <h3>Hello World - This is social media downloader</h3>
-          <ImageContainer>
-            <img src="/vite.svg" alt="" />
-          </ImageContainer>
-          <p>
-            Video source: <a href="">FIFATV</a>
-          </p>
-          <ButtonsContainer>
-            <Button type="primary">Download as mp3</Button>
-            <Button type="primary">Download as mp4</Button>
-          </ButtonsContainer>
-        </> */}
+        {!youtubePlaylistData && loading ? (
+          <Spinner />
+        ) : !youtubePlaylistData && !loading ? (
+          <h3>Enter a url to download the video</h3>
+        ) : (
+          <ol>
+            {youtubePlaylistData.dataDownloads.map((item) => (
+              <VideoContainer>
+                <Space direction="horizontal">
+                  <img src={item.thumbnail} alt="" />
+                  <p>{item.title}</p>
+                  <CustomizedDropdown item={item} />
+                </Space>
+              </VideoContainer>
+            ))}
+          </ol>
+        )}
       </BodyContainer>
     </SocialMediaContainer>
   );
 };
-
 
 const BodyContainer = styled.div`
   width: 100%;
@@ -46,27 +82,15 @@ const BodyContainer = styled.div`
   }
 `;
 
-const ImageContainer = styled.div`
-  width: 100%;
-  height: 400px;
-  margin: 1rem 0;
-  background: #f5f5f5;
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const ButtonsContainer = styled.div`
+const VideoContainer = styled.li`
   width: 100%;
   margin: 1rem 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
 
-  button {
-    margin: 1rem 0;
+  img {
+    width: 100px;
+    height: 100px;
   }
 `;
 

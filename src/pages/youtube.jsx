@@ -1,6 +1,6 @@
 import { DownOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Space } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -11,20 +11,7 @@ import Spinner from "../utils/spinner";
 const Youtube = () => {
   const { youtubeVideoData } = useContext(GlobalContext);
 
-  // const items = [
-  //   {
-  //     label: "1st menu item",
-  //     key: "1",
-  //   },
-  //   {
-  //     label: "2nd menu item",
-  //     key: "2",
-  //   },
-  //   {
-  //     label: "3rd menu item",
-  //     key: "3",
-  //   },
-  // ];
+  const [loading, setLoading] = useState(false);
 
   const items =
     youtubeVideoData &&
@@ -45,11 +32,13 @@ const Youtube = () => {
 
   return (
     <SocialMediaContainer>
-      <UrlInput category={"youtube"} />
+      <UrlInput category={"youtube"} setLoading={setLoading} />
 
       <BodyContainer>
-        {!youtubeVideoData ? (
+        {!youtubeVideoData && loading ? (
           <Spinner />
+        ) : !youtubeVideoData && !loading ? (
+          <h3>Enter a url to download the video</h3>
         ) : (
           <>
             <h3>{youtubeVideoData.title}</h3>

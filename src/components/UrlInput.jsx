@@ -4,9 +4,15 @@ import styled from "styled-components";
 import { GlobalContext } from "../context/context";
 import { getVideo } from "../utils/axios";
 
-const UrlInput = ({ category }) => {
+const UrlInput = ({ category, setLoading }) => {
   const [url, setUrl] = useState("");
-  const { setYoutubeVideoData } = useContext(GlobalContext);
+  const {
+    setYoutubeVideoData,
+    setYoutubePlaylistData,
+    setTwitterVideoData,
+    setFacebookVideoData,
+    setInstagramVideoData,
+  } = useContext(GlobalContext);
 
   const handleVideoData = (category, data) => {
     switch (category) {
@@ -33,12 +39,22 @@ const UrlInput = ({ category }) => {
   const handleUrlConversion = async () => {
     if (!url) message.error("Invalid url provided!");
     else {
+      setLoading(true);
       await getVideo(category, url)
         .then(({ data }) => {
           console.log(data);
+
+          if (data.status === "error") {
+            message.error("Conversion Failed!");
+            setLoading(false);
+            return;
+          }
           handleVideoData(category, data);
+          setLoading(false);
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.error(error);
+        });
     }
   };
 
